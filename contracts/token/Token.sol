@@ -67,6 +67,7 @@ import "./IToken.sol";
 import "@onchain-id/solidity/contracts/interface/IIdentity.sol";
 import "./TokenStorage.sol";
 import "../roles/AgentRoleUpgradeable.sol";
+import "hardhat/console.sol";
 
 contract Token is IToken, AgentRoleUpgradeable, TokenStorage {
 
@@ -97,7 +98,7 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage {
      *  emits an `IdentityRegistryAdded` event
      *  emits a `ComplianceAdded` event
      */
-    function init(
+    function inittt(
         address _identityRegistry,
         address _compliance,
         string memory _name,
@@ -128,6 +129,7 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage {
         _tokenPaused = true;
         setIdentityRegistry(_identityRegistry);
         setCompliance(_compliance);
+        
         emit UpdatedTokenInformation(_tokenName, _tokenSymbol, _tokenDecimals, _TOKEN_VERSION, _tokenOnchainID);
     }
 
@@ -416,8 +418,12 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage {
      */
     function transfer(address _to, uint256 _amount) public override whenNotPaused returns (bool) {
         require(!_frozen[_to] && !_frozen[msg.sender], "wallet is frozen");
+        // console.log(_amount <= balanceOf(msg.sender),_amount ,msg.sender,"in the transfer function ");
+        // console.log( _frozenTokens[msg.sender],"frozen");
         require(_amount <= balanceOf(msg.sender) - (_frozenTokens[msg.sender]), "Insufficient Balance");
+        // console.log("in the transfer function ");
         if (_tokenIdentityRegistry.isVerified(_to) && _tokenCompliance.canTransfer(msg.sender, _to, _amount)) {
+                 
             _transfer(msg.sender, _to, _amount);
             _tokenCompliance.transferred(msg.sender, _to, _amount);
             return true;
@@ -453,8 +459,13 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage {
      */
     function mint(address _to, uint256 _amount) public override onlyAgent {
         require(_tokenIdentityRegistry.isVerified(_to), "Identity is not verified.");
+         console.log("before the mint function");
+
         require(_tokenCompliance.canTransfer(address(0), _to, _amount), "Compliance not followed");
+         console.log("after the mint function");
+
         _mint(_to, _amount);
+         console.log("iun the mint function");
         _tokenCompliance.created(_to, _amount);
     }
 
@@ -525,6 +536,7 @@ contract Token is IToken, AgentRoleUpgradeable, TokenStorage {
      *  @dev See {IERC20-balanceOf}.
      */
     function balanceOf(address _userAddress) public view override returns (uint256) {
+        console.log(_balances[_userAddress],"in the balance of");
         return _balances[_userAddress];
     }
 

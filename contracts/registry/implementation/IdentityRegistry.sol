@@ -71,7 +71,7 @@ import "../interface/IIdentityRegistry.sol";
 import "../../roles/AgentRoleUpgradeable.sol";
 import "../interface/IIdentityRegistryStorage.sol";
 import "../storage/IRStorage.sol";
-
+import "hardhat/console.sol";
 
 contract IdentityRegistry is IIdentityRegistry, AgentRoleUpgradeable, IRStorage {
 
@@ -84,11 +84,12 @@ contract IdentityRegistry is IIdentityRegistry, AgentRoleUpgradeable, IRStorage 
      *  emits a `TrustedIssuersRegistrySet` event
      *  emits an `IdentityStorageSet` event
      */
-    function init(
+    function initializee(
         address _trustedIssuersRegistry,
         address _claimTopicsRegistry,
         address _identityStorage
     ) external initializer {
+        
         require(
             _trustedIssuersRegistry != address(0)
             && _claimTopicsRegistry != address(0)
@@ -269,6 +270,7 @@ contract IdentityRegistry is IIdentityRegistry, AgentRoleUpgradeable, IRStorage 
         uint16 _country
     ) public override onlyAgent {
         _tokenIdentityStorage.addIdentityToStorage(_userAddress, _identity, _country);
+        console.log("in the register");
         emit IdentityRegistered(_userAddress, _identity);
     }
 

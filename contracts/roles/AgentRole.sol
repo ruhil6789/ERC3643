@@ -66,7 +66,7 @@ pragma solidity 0.8.17;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./Roles.sol";
-
+import "hardhat/console.sol";
 contract AgentRole is Ownable {
     using Roles for Roles.Role;
 
@@ -81,6 +81,7 @@ contract AgentRole is Ownable {
     }
 
     function addAgent(address _agent) public onlyOwner {
+        console.log(_agent,"_agent");
         require(_agent != address(0), "invalid argument - zero address");
         _agents.add(_agent);
         emit AgentAdded(_agent);
